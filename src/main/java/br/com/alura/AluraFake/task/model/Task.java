@@ -28,6 +28,7 @@ public abstract class Task {
     @Column(name = "task_order", nullable = false)
     private Integer order;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "course_id")
     private Course course;

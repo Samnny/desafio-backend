@@ -1,5 +1,7 @@
 package br.com.alura.AluraFake.course;
 
+import br.com.alura.AluraFake.course.dto.CourseListItemDTO;
+import br.com.alura.AluraFake.course.dto.NewCourseDTO;
 import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.TaskRepository;
 import br.com.alura.AluraFake.task.model.Type;
@@ -16,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

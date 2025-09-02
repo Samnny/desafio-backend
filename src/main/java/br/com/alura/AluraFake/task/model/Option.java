@@ -20,6 +20,7 @@ public class Option {
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "task_id")
     private Task task;
