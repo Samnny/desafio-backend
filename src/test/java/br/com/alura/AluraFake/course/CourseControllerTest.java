@@ -18,6 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -102,5 +105,18 @@ class CourseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Java"))
                 .andExpect(jsonPath("$.[0].description").value("Curso de java"));
+    }
+
+    @Test
+    @DisplayName("Deve chamar o serviço de publicação e retornar 200 OK quando o usuário for instrutor")
+    @WithMockUser(roles = "INSTRUCTOR") // Simula um usuário logado com o papel de INSTRUCTOR
+    void publishCourse_shouldCallServiceAndReturnOk_whenUserIsInstructor() throws Exception {
+        doNothing().when(courseService).publishCourse(1L);
+
+        mockMvc.perform(post("/course/1/publish")
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        verify(courseService, times(1)).publishCourse(1L);
     }
 }
