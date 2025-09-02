@@ -78,4 +78,7 @@ public class Course {
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
+
+    public void setId(long l) {
+    }
 }
