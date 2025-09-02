@@ -80,5 +80,10 @@ public class Course {
     }
 
     public void setId(long l) {
+        this.id = l;
+    }
+
+    public void setPublishedAt(LocalDateTime now) {
+        this.publishedAt = now;
     }
 }
