@@ -29,7 +29,6 @@ public class CourseController {
 
     @PostMapping("/{id}/publish")
     public ResponseEntity<Void> publishCourse(@PathVariable Long id) {
-        // Agora este endpoint chama a lógica de negócio que implementamos
         courseService.publishCourse(id);
         return ResponseEntity.ok().build();
     }
