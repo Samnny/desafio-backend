@@ -1,0 +1,42 @@
+name: Avaliação com IA
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  avaliar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código do candidato (com histórico completo)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-generativeai
+
+      - name: Executar avaliação com IA
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          python .github/scripts/avaliar.py
+
+      - name: Comentar avaliação no PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: relatorio.md
