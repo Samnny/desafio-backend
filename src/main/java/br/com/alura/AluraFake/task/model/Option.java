@@ -17,8 +17,7 @@ public class Option {
     @Column(nullable = false, length = 80)
     private String text;
 
-    @NotNull
-    @Column(nullable = false)
+    @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

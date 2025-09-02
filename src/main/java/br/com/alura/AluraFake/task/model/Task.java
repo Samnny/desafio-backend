@@ -33,7 +33,11 @@ public abstract class Task {
     private Course course;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "task_type", insertable = false, updatable = false)
+    private String taskType;
 
     public Long getId() {
         return id;
@@ -73,5 +77,9 @@ public abstract class Task {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTaskType() {
+        return taskType;
     }
 }

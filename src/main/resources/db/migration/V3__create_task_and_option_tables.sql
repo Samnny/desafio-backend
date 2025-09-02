@@ -1,5 +1,3 @@
--- V3: Cria as tabelas para Atividades (Tasks) e suas Alternativas (Options)
-
 CREATE TABLE task (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     statement VARCHAR(255) NOT NULL,
@@ -9,7 +7,7 @@ CREATE TABLE task (
     course_id BIGINT NOT NULL,
     CONSTRAINT fk_task_course FOREIGN KEY (course_id) REFERENCES course(id),
     UNIQUE (course_id, statement)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE `option` (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -17,4 +15,4 @@ CREATE TABLE `option` (
     is_correct BOOLEAN NOT NULL,
     task_id BIGINT NOT NULL,
     CONSTRAINT fk_option_task FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB;
