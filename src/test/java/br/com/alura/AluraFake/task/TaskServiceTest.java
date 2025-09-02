@@ -3,6 +3,7 @@ package br.com.alura.AluraFake.task;
 import br.com.alura.AluraFake.course.Course;
 import br.com.alura.AluraFake.course.CourseRepository;
 import br.com.alura.AluraFake.course.Status;
+import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.dto.MultipleChoiceTaskRequest;
 import br.com.alura.AluraFake.task.dto.OpenTextTaskRequest;
 import br.com.alura.AluraFake.task.dto.OptionRequest;
@@ -77,7 +78,7 @@ class TaskServiceTest {
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createOpenTextTask(request);
         });
 
@@ -128,7 +129,7 @@ class TaskServiceTest {
         when(taskMapper.toEntity(request, course)).thenReturn(taskEntity); // Agora ele retorna o objeto completo
         when(taskRepository.existsByCourseAndStatement(course, "Enunciado duplicado")).thenReturn(true);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createOpenTextTask(request);
         });
         assertEquals("A task with the same statement already exists in this course.", exception.getMessage());
@@ -146,7 +147,7 @@ class TaskServiceTest {
         when(taskRepository.findMaxOrderByCourse(course)).thenReturn(2);
 
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createOpenTextTask(request);
         });
 
@@ -172,7 +173,7 @@ class TaskServiceTest {
         when(taskMapper.toEntity(request, course)).thenReturn(taskEntity);
 
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createSingleChoiceTask(request);
         });
 
@@ -198,7 +199,7 @@ class TaskServiceTest {
         when(taskMapper.toEntity(request, course)).thenReturn(taskEntity);
 
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createSingleChoiceTask(request);
         });
 
@@ -225,7 +226,7 @@ class TaskServiceTest {
         when(taskMapper.toEntity(request, course)).thenReturn(taskEntity);
 
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createMultipleChoiceTask(request);
         });
 
@@ -250,7 +251,7 @@ class TaskServiceTest {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(taskMapper.toEntity(request, course)).thenReturn(taskEntity);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             taskService.createMultipleChoiceTask(request);
         });
 

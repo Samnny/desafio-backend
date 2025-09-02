@@ -3,6 +3,7 @@ package br.com.alura.AluraFake.task;
 import br.com.alura.AluraFake.course.Course;
 import br.com.alura.AluraFake.course.CourseRepository;
 import br.com.alura.AluraFake.course.Status;
+import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.dto.MultipleChoiceTaskRequest;
 import br.com.alura.AluraFake.task.dto.OpenTextTaskRequest;
 import br.com.alura.AluraFake.task.dto.OptionRequest;
@@ -66,13 +67,13 @@ public class TaskService {
     private void validateAndPrepareForSave(Task task) {
         // Regra: Enunciado único por curso
         if (taskRepository.existsByCourseAndStatement(task.getCourse(), task.getStatement())) {
-            throw new IllegalArgumentException("A task with the same statement already exists in this course.");
+            throw new BusinessRuleException("A task with the same statement already exists in this course.");
         }
 
         // Regra: Ordem contínua
         int maxOrder = taskRepository.findMaxOrderByCourse(task.getCourse());
         if (task.getOrder() > maxOrder + 1) {
-            throw new IllegalArgumentException("Invalid task order. The next order should be " + (maxOrder + 1) + ".");
+            throw new BusinessRuleException("Invalid task order. The next order should be " + (maxOrder + 1) + ".");
         }
 
         // Reordena as tasks existentes se necessário
@@ -85,7 +86,7 @@ public class TaskService {
 
         // Ajuste: Usando o enum Status
         if (course.getStatus() != Status.BUILDING) {
-            throw new IllegalArgumentException("Cannot add tasks to a course that is not in BUILDING status.");
+            throw new BusinessRuleException("Cannot add tasks to a course that is not in BUILDING status.");
         }
         return course;
     }
@@ -101,7 +102,7 @@ public class TaskService {
     private void validateSingleChoiceOptions(List<OptionRequest> options) {
         long correctOptionsCount = options.stream().filter(OptionRequest::isCorrect).count();
         if (correctOptionsCount != 1) {
-            throw new IllegalArgumentException("Single choice tasks must have exactly one correct option.");
+            throw new BusinessRuleException("Single choice tasks must have exactly one correct option.");
         }
     }
 
@@ -109,10 +110,10 @@ public class TaskService {
     private void validateMultipleChoiceOptions(List<OptionRequest> options) {
         long correctOptionsCount = options.stream().filter(OptionRequest::isCorrect).count();
         if (correctOptionsCount < 2) {
-            throw new IllegalArgumentException("Multiple choice tasks must have at least two correct options.");
+            throw new BusinessRuleException("Multiple choice tasks must have at least two correct options.");
         }
         if (correctOptionsCount == options.size()) {
-            throw new IllegalArgumentException("Multiple choice tasks must have at least one incorrect option.");
+            throw new BusinessRuleException("Multiple choice tasks must have at least one incorrect option.");
         }
     }
 
@@ -126,12 +127,12 @@ public class TaskService {
         // Regra: Alternativas não podem ser iguais entre si
         // Se o tamanho do Set for diferente do tamanho da Lista, significa que havia itens duplicados
         if (optionTexts.size() != options.size()) {
-            throw new IllegalArgumentException("Options cannot have duplicate texts.");
+            throw new BusinessRuleException("Options cannot have duplicate texts.");
         }
 
         // Regra: Alternativas não podem ser iguais ao enunciado da atividade
         if (optionTexts.contains(statement)) {
-            throw new IllegalArgumentException("An option's text cannot be the same as the task's statement.");
+            throw new BusinessRuleException("An option's text cannot be the same as the task's statement.");
         }
     }
 }

@@ -1,5 +1,6 @@
 package br.com.alura.AluraFake.course;
 
+import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.TaskRepository;
 import br.com.alura.AluraFake.task.model.MultipleChoiceTask;
 import br.com.alura.AluraFake.task.model.OpenTextTask;
@@ -72,7 +73,7 @@ class CourseServiceTest {
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             courseService.publishCourse(1L);
         });
 
@@ -88,7 +89,7 @@ class CourseServiceTest {
         when(taskRepository.countByCourseAndTaskType(course, "SINGLE_CHOICE")).thenReturn(1L);
         when(taskRepository.countByCourseAndTaskType(course, "MULTIPLE_CHOICE")).thenReturn(0L);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             courseService.publishCourse(1L);
         });
 
@@ -107,7 +108,7 @@ class CourseServiceTest {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(taskRepository.countByCourseAndTaskType(any(), anyString())).thenReturn(1L);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+        BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             courseService.publishCourse(1L);
         });
 

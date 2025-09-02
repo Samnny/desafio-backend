@@ -1,5 +1,6 @@
 package br.com.alura.AluraFake.course;
 
+import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.TaskRepository;
 import br.com.alura.AluraFake.task.model.Task;
 import br.com.alura.AluraFake.user.User;
@@ -31,7 +32,7 @@ public class CourseService {
 
         // 2. REGRA: O curso só pode ser publicado se o status for BUILDING.
         if (course.getStatus() != Status.BUILDING) {
-            throw new IllegalStateException("Course can only be published if its status is BUILDING.");
+            throw new BusinessRuleException("Course can only be published if its status is BUILDING.");
         }
 
         // 3. REGRA: Conter ao menos uma atividade de cada tipo.
@@ -40,19 +41,19 @@ public class CourseService {
         boolean hasMultipleChoice = taskRepository.countByCourseAndTaskType(course, "MULTIPLE_CHOICE") > 0;
 
         if (!hasOpenText || !hasSingleChoice || !hasMultipleChoice) {
-            throw new IllegalStateException("Course must have at least one of each task type to be published.");
+            throw new BusinessRuleException("Course must have at least one of each task type to be published.");
         }
 
         // 4. REGRA: Ter atividades com 'order' em sequência contínua (1, 2, 3...).
         List<Task> tasks = course.getTasks();
         if (tasks.isEmpty()) {
-            throw new IllegalStateException("Course must have at least one task to be published.");
+            throw new BusinessRuleException("Course must have at least one task to be published.");
         }
         tasks.sort(Comparator.comparing(Task::getOrder));
 
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).getOrder() != i + 1) {
-                throw new IllegalStateException("Task order is not continuous. Expected order " + (i + 1) + " but was not found.");
+                throw new BusinessRuleException("Task order is not continuous. Expected order " + (i + 1) + " but was not found.");
             }
         }
 
