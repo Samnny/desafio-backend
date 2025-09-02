@@ -2,8 +2,8 @@ package br.com.alura.AluraFake.course;
 
 import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.TaskRepository;
-import br.com.alura.AluraFake.task.model.Task;
 import br.com.alura.AluraFake.task.model.Type;
+import br.com.alura.AluraFake.task.model.Task;
 import br.com.alura.AluraFake.user.User;
 import br.com.alura.AluraFake.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,20 +24,28 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository; 
+    private final UserRepository userRepository;
 
     @Transactional
     public void publishCourse(Long courseId) {
-        // 1. REGRA: Encontrar o curso ou lançar uma exceção 404
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
 
-        // 2. REGRA: O curso só pode ser publicado se o status for BUILDING.
+        validateCourseStatus(course);
+        validateTaskTypes(course);
+        validateTaskOrder(course);
+
+        course.setStatus(Status.PUBLISHED);
+        course.setPublishedAt(LocalDateTime.now());
+    }
+
+    private void validateCourseStatus(Course course) {
         if (course.getStatus() != Status.BUILDING) {
             throw new BusinessRuleException("Course can only be published if its status is BUILDING.");
         }
+    }
 
-        // 3. REGRA: Conter ao menos uma atividade de cada tipo.
+    private void validateTaskTypes(Course course) {
         boolean hasOpenText = taskRepository.countByCourseAndTaskType(course, Type.OPEN_TEXT) > 0;
         boolean hasSingleChoice = taskRepository.countByCourseAndTaskType(course, Type.SINGLE_CHOICE) > 0;
         boolean hasMultipleChoice = taskRepository.countByCourseAndTaskType(course, Type.MULTIPLE_CHOICE) > 0;
@@ -44,12 +53,14 @@ public class CourseService {
         if (!hasOpenText || !hasSingleChoice || !hasMultipleChoice) {
             throw new BusinessRuleException("Course must have at least one of each task type to be published.");
         }
+    }
 
-        // 4. REGRA: Ter atividades com 'order' em sequência contínua (1, 2, 3...).
+    private void validateTaskOrder(Course course) {
         List<Task> tasks = course.getTasks();
         if (tasks.isEmpty()) {
             throw new BusinessRuleException("Course must have at least one task to be published.");
         }
+
         tasks.sort(Comparator.comparing(Task::getOrder));
 
         for (int i = 0; i < tasks.size(); i++) {
@@ -57,10 +68,6 @@ public class CourseService {
                 throw new BusinessRuleException("Task order is not continuous. Expected order " + (i + 1) + " but was not found.");
             }
         }
-
-        // 5. Se todas as validações passaram, atualize o curso.
-        course.setStatus(Status.PUBLISHED);
-        course.setPublishedAt(LocalDateTime.now());
     }
 
     public Course createCourse(NewCourseDTO newCourseDTO) {
