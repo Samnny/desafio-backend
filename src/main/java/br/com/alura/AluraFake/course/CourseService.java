@@ -3,6 +3,7 @@ package br.com.alura.AluraFake.course;
 import br.com.alura.AluraFake.infra.exception.BusinessRuleException;
 import br.com.alura.AluraFake.task.TaskRepository;
 import br.com.alura.AluraFake.task.model.Task;
+import br.com.alura.AluraFake.task.model.Type;
 import br.com.alura.AluraFake.user.User;
 import br.com.alura.AluraFake.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,9 +37,9 @@ public class CourseService {
         }
 
         // 3. REGRA: Conter ao menos uma atividade de cada tipo.
-        boolean hasOpenText = taskRepository.countByCourseAndTaskType(course, "OPEN_TEXT") > 0;
-        boolean hasSingleChoice = taskRepository.countByCourseAndTaskType(course, "SINGLE_CHOICE") > 0;
-        boolean hasMultipleChoice = taskRepository.countByCourseAndTaskType(course, "MULTIPLE_CHOICE") > 0;
+        boolean hasOpenText = taskRepository.countByCourseAndTaskType(course, Type.OPEN_TEXT) > 0;
+        boolean hasSingleChoice = taskRepository.countByCourseAndTaskType(course, Type.SINGLE_CHOICE) > 0;
+        boolean hasMultipleChoice = taskRepository.countByCourseAndTaskType(course, Type.MULTIPLE_CHOICE) > 0;
 
         if (!hasOpenText || !hasSingleChoice || !hasMultipleChoice) {
             throw new BusinessRuleException("Course must have at least one of each task type to be published.");

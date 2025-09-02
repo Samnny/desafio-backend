@@ -5,6 +5,7 @@ import br.com.alura.AluraFake.task.TaskRepository;
 import br.com.alura.AluraFake.task.model.MultipleChoiceTask;
 import br.com.alura.AluraFake.task.model.OpenTextTask;
 import br.com.alura.AluraFake.task.model.SingleChoiceTask;
+import br.com.alura.AluraFake.task.model.Type;
 import br.com.alura.AluraFake.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,9 +58,9 @@ class CourseServiceTest {
         course.setTasks(new ArrayList<>(List.of(task1, task2, task3)));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
-        when(taskRepository.countByCourseAndTaskType(course, "OPEN_TEXT")).thenReturn(1L);
-        when(taskRepository.countByCourseAndTaskType(course, "SINGLE_CHOICE")).thenReturn(1L);
-        when(taskRepository.countByCourseAndTaskType(course, "MULTIPLE_CHOICE")).thenReturn(1L);
+        when(taskRepository.countByCourseAndTaskType(course, Type.OPEN_TEXT)).thenReturn(1L);
+        when(taskRepository.countByCourseAndTaskType(course, Type.SINGLE_CHOICE)).thenReturn(1L);
+        when(taskRepository.countByCourseAndTaskType(course, Type.MULTIPLE_CHOICE)).thenReturn(1L);
 
         courseService.publishCourse(1L);
 
@@ -85,9 +86,9 @@ class CourseServiceTest {
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        when(taskRepository.countByCourseAndTaskType(course, "OPEN_TEXT")).thenReturn(1L);
-        when(taskRepository.countByCourseAndTaskType(course, "SINGLE_CHOICE")).thenReturn(1L);
-        when(taskRepository.countByCourseAndTaskType(course, "MULTIPLE_CHOICE")).thenReturn(0L);
+        when(taskRepository.countByCourseAndTaskType(course, Type.OPEN_TEXT)).thenReturn(1L);
+        when(taskRepository.countByCourseAndTaskType(course, Type.SINGLE_CHOICE)).thenReturn(1L);
+        when(taskRepository.countByCourseAndTaskType(course, Type.MULTIPLE_CHOICE)).thenReturn(0L);
 
         BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             courseService.publishCourse(1L);
@@ -106,7 +107,7 @@ class CourseServiceTest {
         course.setTasks(new ArrayList<>(List.of(task1, task3)));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
-        when(taskRepository.countByCourseAndTaskType(any(), anyString())).thenReturn(1L);
+        when(taskRepository.countByCourseAndTaskType(any(Course.class), any(Type.class))).thenReturn(1L);
 
         BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             courseService.publishCourse(1L);
