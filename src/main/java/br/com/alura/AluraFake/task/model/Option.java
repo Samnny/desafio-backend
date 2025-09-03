@@ -1,0 +1,59 @@
+package br.com.alura.AluraFake.task.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name = "`option`")
+public class Option {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
+    @Size(min = 4, max = 80)
+    @Column(nullable = false, length = 80)
+    private String text;
+
+    @Column(name = "is_correct", nullable = false)
+    private Boolean isCorrect;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "task_id")
+    private Task task;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Boolean getIsCorrect() {
+        return isCorrect;
+    }
+
+    public void setIsCorrect(Boolean correct) {
+        isCorrect = correct;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+}

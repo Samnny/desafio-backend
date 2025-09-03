@@ -1,25 +1,49 @@
 package br.com.alura.AluraFake.course;
 
+import br.com.alura.AluraFake.task.model.Task;
 import br.com.alura.AluraFake.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "course")
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @NotBlank
+    @Size(min = 4, max = 50)
+    @Column(nullable = false)
     private String title;
+
+    @NotBlank
+    @Size(min = 10, max = 255)
+    @Column(nullable = false)
     private String description;
-    @ManyToOne
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "instructor_id")
     private User instructor;
+
     @Enumerated(EnumType.STRING)
     private Status status;
+
     private LocalDateTime publishedAt;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
 
     @Deprecated
     public Course(){}
@@ -62,5 +86,21 @@ public class Course {
 
     public LocalDateTime getPublishedAt() {
         return publishedAt;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public void setId(long l) {
+        this.id = l;
+    }
+
+    public void setPublishedAt(LocalDateTime now) {
+        this.publishedAt = now;
     }
 }

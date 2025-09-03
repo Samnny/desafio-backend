@@ -1,58 +1,41 @@
 package br.com.alura.AluraFake.course;
 
-import br.com.alura.AluraFake.user.*;
-import br.com.alura.AluraFake.util.ErrorItemDTO;
+import br.com.alura.AluraFake.course.dto.CourseListItemDTO;
+import br.com.alura.AluraFake.course.dto.CourseResponseDTO; // Importe o DTO de resposta
+import br.com.alura.AluraFake.course.dto.NewCourseDTO;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder; // Importe o UriComponentsBuilder
 
-import java.util.*;
+import java.net.URI; // Importe a classe URI
+import java.util.List;
 
 @RestController
+@RequestMapping("/course")
+@RequiredArgsConstructor
 public class CourseController {
 
-    private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
+    private final CourseService courseService;
 
-    @Autowired
-    public CourseController(CourseRepository courseRepository, UserRepository userRepository){
-        this.courseRepository = courseRepository;
-        this.userRepository = userRepository;
+    @PostMapping("/new")
+    public ResponseEntity<CourseResponseDTO> createCourse(@Valid @RequestBody NewCourseDTO newCourse, UriComponentsBuilder uriBuilder) {
+        Course courseSalvo = courseService.createCourse(newCourse);
+        URI uri = uriBuilder.path("/course/{id}").buildAndExpand(courseSalvo.getId()).toUri();
+        return ResponseEntity.created(uri).body(new CourseResponseDTO(courseSalvo));
     }
 
-    @Transactional
-    @PostMapping("/course/new")
-    public ResponseEntity createCourse(@Valid @RequestBody NewCourseDTO newCourse) {
-
-        //Caso implemente o bonus, pegue o instrutor logado
-        Optional<User> possibleAuthor = userRepository
-                .findByEmail(newCourse.getEmailInstructor())
-                .filter(User::isInstructor);
-
-        if(possibleAuthor.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorItemDTO("emailInstructor", "Usuário não é um instrutor"));
-        }
-
-        Course course = new Course(newCourse.getTitle(), newCourse.getDescription(), possibleAuthor.get());
-
-        courseRepository.save(course);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @GetMapping("/course/all")
-    public ResponseEntity<List<CourseListItemDTO>> createCourse() {
-        List<CourseListItemDTO> courses = courseRepository.findAll().stream()
-                .map(CourseListItemDTO::new)
-                .toList();
+    @GetMapping("/all")
+    public ResponseEntity<List<CourseListItemDTO>> getAllCourses() {
+        List<CourseListItemDTO> courses = courseService.findAllCourses();
         return ResponseEntity.ok(courses);
     }
 
-    @PostMapping("/course/{id}/publish")
-    public ResponseEntity createCourse(@PathVariable("id") Long id) {
+    @PostMapping("/{id}/publish")
+    public ResponseEntity<Void> publishCourse(@PathVariable Long id) {
+        courseService.publishCourse(id);
         return ResponseEntity.ok().build();
     }
-
 }
